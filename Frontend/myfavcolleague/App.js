@@ -17,3 +17,5 @@ const styles = StyleSheet.create({
     backgroundColor: '#1F2937',
   },
 });
+
+//deneme damlos 
