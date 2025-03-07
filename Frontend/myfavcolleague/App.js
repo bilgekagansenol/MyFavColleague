@@ -13,6 +13,10 @@ import { Linking } from 'react-native';
 // App Screens
 import HomeScreen from './Screens/HomeScreen';
 import RecentAnalysisScreen from './Screens/RecentAnalysisScreen';
+import MeetingDetailsScreen from './Screens/MeetingDetailsScreen';
+import ProfileScreen from './Screens/ProfileScreen';
+import AboutScreen from './Screens/AboutScreen';
+import ChangePasswordScreen from './Screens/ChangePasswordScreen';
 
 const Stack = createStackNavigator();
 const AuthStack = createStackNavigator();
@@ -31,6 +35,8 @@ const AppNavigator = () => (
   <AppStack.Navigator screenOptions={{ headerShown: false }}>
     <AppStack.Screen name="Home" component={HomeScreen} />
     <AppStack.Screen name="RecentAnalysis" component={RecentAnalysisScreen} />
+    <AppStack.Screen name="MeetingDetails" component={MeetingDetailsScreen} />
+    <AppStack.Screen name="Profile" component={ProfileScreen} />
   </AppStack.Navigator>
 );
 
@@ -40,7 +46,7 @@ export default function App() {
 
   // Handle deep links
   useEffect(() => {
-    // Function to handle incoming links
+    // Fonksiyon tanımı
     const handleDeepLink = (event) => {
       const url = event.url;
       
@@ -56,22 +62,21 @@ export default function App() {
       }
     };
 
-    // Add event listener for deep links when app is already open
-    Linking.addEventListener('url', handleDeepLink);
+    // React Native'in yeni sürümlerinde kullanım
+    const subscription = Linking.addEventListener('url', handleDeepLink);
     
     // Check if app was opened with a deep link
     Linking.getInitialURL().then(url => {
       if (url) {
-        // Handle the URL the same way
+        // Handle the URL
         handleDeepLink({ url });
       }
     });
 
     // Cleanup
     return () => {
-      // Remove event listener
-      // Note: In newer React Native versions, this might be different
-      Linking.removeEventListener('url', handleDeepLink);
+      // Yeni sürümlerde aboneliği kaldırma
+      subscription.remove();
     };
   }, []);
 
@@ -156,6 +161,10 @@ export default function App() {
         <Stack.Screen name="ResetPassword" component={ResetPasswordScreen} />
         <Stack.Screen name="Home" component={HomeScreen} />
         <Stack.Screen name="RecentAnalysis" component={RecentAnalysisScreen} />
+        <Stack.Screen name="MeetingDetails" component={MeetingDetailsScreen} />
+        <Stack.Screen name="Profile" component={ProfileScreen} />
+        <Stack.Screen name="About" component={AboutScreen} />
+        <Stack.Screen name="ChangePassword" component={ChangePasswordScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );

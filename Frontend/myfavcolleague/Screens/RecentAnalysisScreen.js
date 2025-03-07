@@ -36,10 +36,13 @@ const RecentAnalysisScreen = ({ navigation }) => {
     <TouchableOpacity 
       style={styles.analysisItem}
       activeOpacity={0.7}
-      onPress={() => {/* Navigate to analysis details */}}
+      onPress={() => navigation.navigate('MeetingDetails', { 
+        title: item.title,
+        date: item.date
+      })}
     >
       <LinearGradient
-        colors={['#7C4DFF', '#6A3DE8']}
+        colors={['#003366', '#1F2937']}
         style={styles.gradientCard}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 0 }}
@@ -131,7 +134,7 @@ const styles = StyleSheet.create({
   headerTitle: {
     fontSize: 20,
     fontWeight: 'bold',
-    color: '#333',
+    color: '#003366',
   },
   headerRight: {
     flexDirection: 'row',
@@ -207,7 +210,7 @@ const styles = StyleSheet.create({
     width: 36,
     height: 36,
     borderRadius: 18,
-    backgroundColor: '#7C4DFF',
+    backgroundColor: '#003366',
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: 8,
@@ -218,7 +221,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   logoTitle: {
-    color: '#7C4DFF',
+    color: '#003366',
     fontSize: 16,
     fontWeight: 'bold',
   },

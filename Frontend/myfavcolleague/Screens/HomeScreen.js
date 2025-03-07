@@ -13,12 +13,16 @@ import {
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
+import { useNavigation } from '@react-navigation/native';
+import { useTheme } from '../theme/ThemeContext';
 
 const { width } = Dimensions.get('window');
 
-const HomeScreen = ({ navigation }) => {
+const HomeScreen = () => {
+  const navigation = useNavigation();
   const [menuVisible, setMenuVisible] = useState(false);
   const [slideAnim] = useState(new Animated.Value(-width));
+  const { theme, isDarkMode } = useTheme();
 
   const navigateToRecentAnalysis = () => {
     // Navigate to Recent Analysis screen
@@ -48,8 +52,8 @@ const HomeScreen = ({ navigation }) => {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
-      <StatusBar barStyle="dark-content" />
+    <SafeAreaView style={[styles.container, { backgroundColor: theme.background }]}>
+      <StatusBar barStyle={isDarkMode ? "light-content" : "dark-content"} backgroundColor={theme.primary} />
       
       {/* Header */}
       <View style={styles.header}>
@@ -61,7 +65,11 @@ const HomeScreen = ({ navigation }) => {
           <TouchableOpacity style={styles.notificationButton}>
             <Ionicons name="notifications-outline" size={24} color="#333" />
           </TouchableOpacity>
-          <TouchableOpacity style={styles.profileButton}>
+          
+          <TouchableOpacity 
+            style={styles.profileButton}
+            onPress={() => navigation.navigate('Profile')}
+          >
             <Ionicons name="person-circle-outline" size={28} color="#333" />
           </TouchableOpacity>
         </View>
@@ -119,11 +127,6 @@ const HomeScreen = ({ navigation }) => {
               </TouchableOpacity>
               
               <TouchableOpacity style={styles.menuItem}>
-                <Ionicons name="people-outline" size={24} color="#333" />
-                <Text style={styles.menuItemText}>Colleagues</Text>
-              </TouchableOpacity>
-              
-              <TouchableOpacity style={styles.menuItem}>
                 <Ionicons name="calendar-outline" size={24} color="#333" />
                 <Text style={styles.menuItemText}>Calendar</Text>
               </TouchableOpacity>
@@ -164,41 +167,27 @@ const HomeScreen = ({ navigation }) => {
           </View>
         </LinearGradient>
 
-        {/* Quick Actions */}
-        <View style={styles.quickActionsContainer}>
-          <Text style={styles.sectionTitle}>Quick Actions</Text>
-          <View style={styles.quickActions}>
-            <TouchableOpacity style={styles.actionCard}>
-              <View style={[styles.actionIcon, { backgroundColor: '#7C4DFF' }]}>
-                <Ionicons name="add-outline" size={24} color="white" />
-              </View>
-              <Text style={styles.actionText}>New Analysis</Text>
-            </TouchableOpacity>
-            
-            <TouchableOpacity 
-              style={styles.actionCard}
-              onPress={navigateToRecentAnalysis}
+        {/* Upload Recording Section */}
+        <View style={styles.uploadSection}>
+          <TouchableOpacity style={styles.uploadCard}>
+            <LinearGradient
+              colors={['#003366', '#1F2937']}
+              style={styles.uploadGradient}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 0 }}
             >
-              <View style={[styles.actionIcon, { backgroundColor: '#FFA500' }]}>
-                <Ionicons name="time-outline" size={24} color="white" />
+              <View style={styles.uploadIconContainer}>
+                <Ionicons name="cloud-upload" size={32} color="white" />
               </View>
-              <Text style={styles.actionText}>Recent Analysis</Text>
-            </TouchableOpacity>
-            
-            <TouchableOpacity style={styles.actionCard}>
-              <View style={[styles.actionIcon, { backgroundColor: '#28A745' }]}>
-                <Ionicons name="people-outline" size={24} color="white" />
-              </View>
-              <Text style={styles.actionText}>Colleagues</Text>
-            </TouchableOpacity>
-            
-            <TouchableOpacity style={styles.actionCard}>
-              <View style={[styles.actionIcon, { backgroundColor: '#17A2B8' }]}>
-                <Ionicons name="stats-chart-outline" size={24} color="white" />
-              </View>
-              <Text style={styles.actionText}>Statistics</Text>
-            </TouchableOpacity>
-          </View>
+              <Text style={styles.uploadTitle}>Upload Recording</Text>
+              <Text style={styles.uploadDescription}>
+                Upload your meeting recording for analysis
+              </Text>
+              <TouchableOpacity style={styles.uploadButton}>
+                <Text style={styles.uploadButtonText}>UPLOAD</Text>
+              </TouchableOpacity>
+            </LinearGradient>
+          </TouchableOpacity>
         </View>
 
         {/* Meeting Highlights Section */}
@@ -212,10 +201,13 @@ const HomeScreen = ({ navigation }) => {
           
           <TouchableOpacity 
             style={styles.highlightCard}
-            onPress={navigateToRecentAnalysis}
+            onPress={() => navigation.navigate('MeetingDetails', { 
+              title: 'Weekly Team Meeting',
+              date: 'Today'
+            })}
           >
             <LinearGradient
-              colors={['#7C4DFF', '#6A3DE8']}
+              colors={['#003366', '#1F2937']}
               style={styles.highlightGradient}
               start={{ x: 0, y: 0 }}
               end={{ x: 1, y: 0 }}
@@ -231,10 +223,13 @@ const HomeScreen = ({ navigation }) => {
           
           <TouchableOpacity 
             style={styles.highlightCard}
-            onPress={navigateToRecentAnalysis}
+            onPress={() => navigation.navigate('MeetingDetails', { 
+              title: 'Project Review',
+              date: 'Yesterday'
+            })}
           >
             <LinearGradient
-              colors={['#7C4DFF', '#6A3DE8']}
+              colors={['#003366', '#1F2937']}
               style={styles.highlightGradient}
               start={{ x: 0, y: 0 }}
               end={{ x: 1, y: 0 }}
@@ -260,10 +255,10 @@ const HomeScreen = ({ navigation }) => {
           
           <View style={styles.activityCard}>
             <View style={styles.activityIconContainer}>
-              <Ionicons name="analytics-outline" size={24} color="#7C4DFF" />
+              <Ionicons name="cloud-upload-outline" size={24} color="#003366" />
             </View>
             <View style={styles.activityContent}>
-              <Text style={styles.activityTitle}>New Analysis Created</Text>
+              <Text style={styles.activityTitle}>Recording Uploaded</Text>
               <Text style={styles.activityTime}>2 hours ago</Text>
             </View>
           </View>
@@ -437,56 +432,69 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: 'rgba(255, 255, 255, 0.8)',
   },
-  quickActionsContainer: {
+  uploadSection: {
     padding: 16,
     marginTop: 16,
   },
-  sectionTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#333',
-    marginBottom: 16,
-  },
-  quickActions: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'space-between',
-  },
-  actionCard: {
-    width: '48%',
-    backgroundColor: 'white',
-    borderRadius: 12,
-    padding: 16,
-    marginBottom: 16,
-    alignItems: 'center',
-    elevation: 2,
+  uploadCard: {
+    borderRadius: 16,
+    overflow: 'hidden',
+    elevation: 4,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
+    shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
-    shadowRadius: 2,
+    shadowRadius: 4,
   },
-  actionIcon: {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
+  uploadGradient: {
+    padding: 24,
+    alignItems: 'center',
+  },
+  uploadIconContainer: {
+    width: 64,
+    height: 64,
+    borderRadius: 32,
+    backgroundColor: 'rgba(255, 255, 255, 0.2)',
     justifyContent: 'center',
     alignItems: 'center',
-    marginBottom: 12,
+    marginBottom: 16,
   },
-  actionText: {
+  uploadTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: 'white',
+    marginBottom: 8,
+  },
+  uploadDescription: {
     fontSize: 14,
-    fontWeight: '500',
-    color: '#333',
+    color: 'rgba(255, 255, 255, 0.8)',
+    textAlign: 'center',
+    marginBottom: 20,
+  },
+  uploadButton: {
+    backgroundColor: '#FFA500',
+    paddingHorizontal: 24,
+    paddingVertical: 12,
+    borderRadius: 8,
+  },
+  uploadButtonText: {
+    color: 'white',
+    fontWeight: 'bold',
+    fontSize: 14,
   },
   highlightsContainer: {
     padding: 16,
-    marginTop: 8,
+    marginTop: 16,
   },
   sectionHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     marginBottom: 16,
+  },
+  sectionTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#333',
   },
   viewAllText: {
     fontSize: 14,
