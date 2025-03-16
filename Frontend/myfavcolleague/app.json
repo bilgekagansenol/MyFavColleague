@@ -4,7 +4,7 @@
     "slug": "myfavcolleague",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "./path/to/your/icon.png",
     "userInterfaceStyle": "light",
     "newArchEnabled": true,
     "splash": {

@@ -18,7 +18,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 
 const { width, height } = Dimensions.get('window');
 
-const LoginScreen = ({ navigation }) => {
+const LoginScreen = ({ navigation, onLogin, onNavigateToSignup, onForgotPassword }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -92,6 +92,14 @@ const LoginScreen = ({ navigation }) => {
               <TouchableOpacity 
                 style={styles.forgotPassword}
                 activeOpacity={0.7}
+                onPress={() => {
+                  console.log('Forgot Password pressed');
+                  if (onForgotPassword) {
+                    onForgotPassword();
+                  } else {
+                    navigation.navigate('ForgotPassword');
+                  }
+                }}
               >
                 <Text style={styles.forgotPasswordText}>Forgot Password?</Text>
               </TouchableOpacity>
@@ -106,7 +114,16 @@ const LoginScreen = ({ navigation }) => {
               
               <View style={styles.signupContainer}>
                 <Text style={styles.signupText}>Don't have an account?</Text>
-                <TouchableOpacity>
+                <TouchableOpacity 
+                  onPress={() => {
+                    console.log('Sign Up pressed');
+                    if (onNavigateToSignup) {
+                      onNavigateToSignup();
+                    } else {
+                      navigation.navigate('Signup');
+                    }
+                  }}
+                >
                   <Text style={styles.signupLink}>Sign Up</Text>
                 </TouchableOpacity>
               </View>

@@ -14,11 +14,13 @@ import {
   Alert
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
+import { useNavigation } from '@react-navigation/native';
 
 const ForgotPasswordScreen = ({ onBackToLogin, onSimulateResetLink }) => {
   const [email, setEmail] = useState('');
   const [isSent, setIsSent] = useState(false);
   const [error, setError] = useState('');
+  const navigation = useNavigation();
 
   const handleResetPassword = () => {
     if (!email) {
@@ -113,11 +115,13 @@ const ForgotPasswordScreen = ({ onBackToLogin, onSimulateResetLink }) => {
               >
                 <Text style={styles.backButtonText}>Back to Sign In</Text>
               </TouchableOpacity>
-              
-              {/* For testing only - remove in production */}
+
               <TouchableOpacity 
                 style={styles.testButton}
-                onPress={onSimulateResetLink}
+                onPress={() => {
+                  console.log('Simulating reset link');
+                  navigation.navigate('ResetPassword');
+                }}
               >
                 <Text style={styles.testButtonText}>Simulate Reset Link</Text>
               </TouchableOpacity>
@@ -250,18 +254,17 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   testButton: {
+    backgroundColor: '#FFA500',
+    borderRadius: 8,
+    padding: 16,
     alignItems: 'center',
     marginTop: 10,
-    padding: 10,
-    borderWidth: 1,
-    borderColor: '#DDD',
-    borderRadius: 8,
-    marginHorizontal: 40,
-    marginTop: 20,
   },
   testButtonText: {
-    color: '#6C757D',
-    fontSize: 12,
+    color: 'white',
+    fontSize: 16,
+    fontWeight: 'bold',
+    letterSpacing: 1,
   },
 });
 

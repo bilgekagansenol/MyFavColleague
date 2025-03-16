@@ -17,6 +17,9 @@ import MeetingDetailsScreen from './Screens/MeetingDetailsScreen';
 import ProfileScreen from './Screens/ProfileScreen';
 import AboutScreen from './Screens/AboutScreen';
 import ChangePasswordScreen from './Screens/ChangePasswordScreen';
+import MeetingsList from './Screens/MeetingsList';
+import MeetingDetails from './Screens/MeetingDetails';
+import UploadScreen from './Screens/UploadScreen';
 
 const Stack = createStackNavigator();
 const AuthStack = createStackNavigator();
@@ -160,11 +163,12 @@ export default function App() {
         <Stack.Screen name="ForgotPassword" component={ForgotPasswordScreen} />
         <Stack.Screen name="ResetPassword" component={ResetPasswordScreen} />
         <Stack.Screen name="Home" component={HomeScreen} />
-        <Stack.Screen name="RecentAnalysis" component={RecentAnalysisScreen} />
-        <Stack.Screen name="MeetingDetails" component={MeetingDetailsScreen} />
+        <Stack.Screen name="MeetingsList" component={MeetingsList} />
+        <Stack.Screen name="MeetingDetails" component={MeetingDetails} />
         <Stack.Screen name="Profile" component={ProfileScreen} />
         <Stack.Screen name="About" component={AboutScreen} />
         <Stack.Screen name="ChangePassword" component={ChangePasswordScreen} />
+        <Stack.Screen name="Upload" component={UploadScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );

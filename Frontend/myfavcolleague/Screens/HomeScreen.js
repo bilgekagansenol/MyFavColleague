@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { 
   StyleSheet, 
   View, 
@@ -9,20 +9,21 @@ import {
   ScrollView,
   Modal,
   Animated,
-  Dimensions
+  Dimensions,
+  Platform,
+  Image
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
-import { useTheme } from '../theme/ThemeContext';
 
 const { width } = Dimensions.get('window');
 
-const HomeScreen = () => {
+const HomeScreen = (props) => {
   const navigation = useNavigation();
   const [menuVisible, setMenuVisible] = useState(false);
-  const [slideAnim] = useState(new Animated.Value(-width));
-  const { theme, isDarkMode } = useTheme();
+  const slideAnim = useRef(new Animated.Value(-width * 0.8)).current;
+  const backgroundOpacity = useRef(new Animated.Value(0)).current;
 
   const navigateToRecentAnalysis = () => {
     // Navigate to Recent Analysis screen
@@ -39,11 +40,23 @@ const HomeScreen = () => {
       duration: 300,
       useNativeDriver: true,
     }).start();
+    
+    Animated.timing(backgroundOpacity, {
+      toValue: 1,
+      duration: 300,
+      useNativeDriver: true,
+    }).start();
   };
 
   const closeMenu = () => {
     Animated.timing(slideAnim, {
-      toValue: -width,
+      toValue: -width * 0.8,
+      duration: 300,
+      useNativeDriver: true,
+    }).start();
+    
+    Animated.timing(backgroundOpacity, {
+      toValue: 0,
       duration: 300,
       useNativeDriver: true,
     }).start(() => {
@@ -51,9 +64,79 @@ const HomeScreen = () => {
     });
   };
 
+  const renderMenuContent = () => {
+    return (
+      <View style={styles.menuContent}>
+        <View style={styles.menuHeader}>
+          <View style={styles.profileImageContainer}>
+            <Ionicons name="person" size={40} color="#666" />
+          </View>
+          <Text style={styles.profileName}>John Doe</Text>
+          <Text style={styles.profileEmail}>john.doe@example.com</Text>
+        </View>
+        
+        <View style={styles.menuItems}>
+          {/* Profile butonu */}
+          <TouchableOpacity 
+            style={styles.menuItem}
+            onPress={() => {
+              console.log('Profile button pressed');
+              closeMenu(); // Menüyü kapat
+              navigation.navigate('Profile'); // Profile ekranına git
+            }}
+          >
+            <Ionicons name="person-outline" size={24} color="#333" />
+            <Text style={styles.menuItemText}>Profile</Text>
+          </TouchableOpacity>
+          
+          {/* Diğer menü öğeleri */}
+          <TouchableOpacity 
+            style={styles.menuItem}
+            onPress={() => {
+              console.log('Meetings button pressed');
+              closeMenu();
+              navigation.navigate('MeetingsList');
+            }}
+          >
+            <Ionicons name="calendar-outline" size={24} color="#333" />
+            <Text style={styles.menuItemText}>Meetings</Text>
+          </TouchableOpacity>
+          
+          <TouchableOpacity 
+            style={styles.menuItem}
+            onPress={() => {
+              console.log('About button pressed');
+              closeMenu();
+              navigation.navigate('About');
+            }}
+          >
+            <Ionicons name="information-circle-outline" size={24} color="#333" />
+            <Text style={styles.menuItemText}>About</Text>
+          </TouchableOpacity>
+          
+          <TouchableOpacity 
+            style={styles.menuItem}
+            onPress={() => {
+              console.log('Logout button pressed');
+              closeMenu();
+              // Çıkış işlemi - örneğin Login ekranına yönlendirme
+              navigation.reset({
+                index: 0,
+                routes: [{ name: 'Login' }],
+              });
+            }}
+          >
+            <Ionicons name="log-out-outline" size={24} color="#333" />
+            <Text style={styles.menuItemText}>Logout</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+    );
+  };
+
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: theme.background }]}>
-      <StatusBar barStyle={isDarkMode ? "light-content" : "dark-content"} backgroundColor={theme.primary} />
+    <SafeAreaView style={styles.container}>
+      <StatusBar barStyle="dark-content" />
       
       {/* Header */}
       <View style={styles.header}>
@@ -65,10 +148,12 @@ const HomeScreen = () => {
           <TouchableOpacity style={styles.notificationButton}>
             <Ionicons name="notifications-outline" size={24} color="#333" />
           </TouchableOpacity>
-          
           <TouchableOpacity 
             style={styles.profileButton}
-            onPress={() => navigation.navigate('Profile')}
+            onPress={() => {
+              console.log('Profile button pressed'); // Debug için log
+              navigation.navigate('Profile');
+            }}
           >
             <Ionicons name="person-circle-outline" size={28} color="#333" />
           </TouchableOpacity>
@@ -76,81 +161,31 @@ const HomeScreen = () => {
       </View>
 
       {/* Side Menu */}
-      <Modal
-        visible={menuVisible}
-        transparent={true}
-        animationType="none"
-        onRequestClose={closeMenu}
-      >
-        <View style={styles.modalOverlay}>
-          <TouchableOpacity 
-            style={styles.modalBackground}
-            activeOpacity={1}
-            onPress={closeMenu}
-          />
-          
+      {menuVisible && (
+        <View style={styles.menuOverlay}>
           <Animated.View 
             style={[
               styles.menuContainer,
               { transform: [{ translateX: slideAnim }] }
             ]}
           >
-            <View style={styles.menuHeader}>
-              <View style={styles.userInfo}>
-                <View style={styles.userAvatar}>
-                  <Text style={styles.userInitials}>JD</Text>
-                </View>
-                <View style={styles.userDetails}>
-                  <Text style={styles.userName}>John Doe</Text>
-                  <Text style={styles.userEmail}>john.doe@example.com</Text>
-                </View>
-              </View>
-            </View>
-            
-            <ScrollView style={styles.menuItems}>
-              <TouchableOpacity style={styles.menuItem}>
-                <Ionicons name="home-outline" size={24} color="#333" />
-                <Text style={styles.menuItemText}>Home</Text>
-              </TouchableOpacity>
-              
-              <TouchableOpacity style={styles.menuItem}>
-                <Ionicons name="person-outline" size={24} color="#333" />
-                <Text style={styles.menuItemText}>Profile</Text>
-              </TouchableOpacity>
-              
-              <TouchableOpacity 
-                style={styles.menuItem}
-                onPress={navigateToRecentAnalysis}
-              >
-                <Ionicons name="analytics-outline" size={24} color="#333" />
-                <Text style={styles.menuItemText}>Meeting Highlights</Text>
-              </TouchableOpacity>
-              
-              <TouchableOpacity style={styles.menuItem}>
-                <Ionicons name="calendar-outline" size={24} color="#333" />
-                <Text style={styles.menuItemText}>Calendar</Text>
-              </TouchableOpacity>
-              
-              <TouchableOpacity style={styles.menuItem}>
-                <Ionicons name="settings-outline" size={24} color="#333" />
-                <Text style={styles.menuItemText}>Settings</Text>
-              </TouchableOpacity>
-              
-              <View style={styles.menuDivider} />
-              
-              <TouchableOpacity style={styles.menuItem}>
-                <Ionicons name="help-circle-outline" size={24} color="#333" />
-                <Text style={styles.menuItemText}>Help & Support</Text>
-              </TouchableOpacity>
-              
-              <TouchableOpacity style={styles.menuItem}>
-                <Ionicons name="log-out-outline" size={24} color="#FF3B30" />
-                <Text style={[styles.menuItemText, { color: '#FF3B30' }]}>Logout</Text>
-              </TouchableOpacity>
-            </ScrollView>
+            {renderMenuContent()}
+          </Animated.View>
+          
+          <Animated.View 
+            style={[
+              styles.menuBackground,
+              { opacity: backgroundOpacity }
+            ]}
+          >
+            <TouchableOpacity 
+              style={styles.menuBackgroundTouch}
+              activeOpacity={1}
+              onPress={closeMenu}
+            />
           </Animated.View>
         </View>
-      </Modal>
+      )}
 
       <ScrollView style={styles.scrollView}>
         {/* Welcome Section */}
@@ -169,78 +204,56 @@ const HomeScreen = () => {
 
         {/* Upload Recording Section */}
         <View style={styles.uploadSection}>
-          <TouchableOpacity style={styles.uploadCard}>
-            <LinearGradient
-              colors={['#003366', '#1F2937']}
-              style={styles.uploadGradient}
-              start={{ x: 0, y: 0 }}
-              end={{ x: 1, y: 0 }}
-            >
-              <View style={styles.uploadIconContainer}>
-                <Ionicons name="cloud-upload" size={32} color="white" />
-              </View>
-              <Text style={styles.uploadTitle}>Upload Recording</Text>
-              <Text style={styles.uploadDescription}>
-                Upload your meeting recording for analysis
-              </Text>
-              <TouchableOpacity style={styles.uploadButton}>
-                <Text style={styles.uploadButtonText}>UPLOAD</Text>
-              </TouchableOpacity>
-            </LinearGradient>
+          <TouchableOpacity 
+            style={styles.actionButton}
+            onPress={() => navigation.navigate('Upload')}
+          >
+            <View style={styles.actionButtonIcon}>
+              <Ionicons name="mic-outline" size={24} color="#fff" />
+            </View>
+            <Text style={styles.actionButtonText}>Upload Recording</Text>
           </TouchableOpacity>
         </View>
 
         {/* Meeting Highlights Section */}
-        <View style={styles.highlightsContainer}>
+        <View style={styles.section}>
           <View style={styles.sectionHeader}>
-            <Text style={styles.sectionTitle}>Meeting Highlights</Text>
-            <TouchableOpacity onPress={navigateToRecentAnalysis}>
-              <Text style={styles.viewAllText}>View All</Text>
+            <Text style={styles.sectionTitle}>Meetings</Text>
+            <TouchableOpacity 
+              onPress={() => {
+                console.log('See All Meetings pressed');
+                navigation.navigate('MeetingsList');
+              }}
+            >
+              <Text style={styles.seeAllText}>See All</Text>
             </TouchableOpacity>
           </View>
           
+          {/* Toplantı kartları */}
           <TouchableOpacity 
-            style={styles.highlightCard}
+            style={styles.meetingCard}
             onPress={() => navigation.navigate('MeetingDetails', { 
-              title: 'Weekly Team Meeting',
-              date: 'Today'
+              meetingId: '1',
+              meetingTitle: 'Weekly Team Meeting',
+              meetingDate: 'Today, 10:00 AM'
             })}
           >
-            <LinearGradient
-              colors={['#003366', '#1F2937']}
-              style={styles.highlightGradient}
-              start={{ x: 0, y: 0 }}
-              end={{ x: 1, y: 0 }}
-            >
-              <Text style={styles.highlightTitle}>Weekly Team Meeting</Text>
-              <Text style={styles.highlightDate}>Today</Text>
-              <View style={styles.highlightFooter}>
-                <Text style={styles.highlightPoints}>5 key points</Text>
-                <Ionicons name="arrow-forward" size={18} color="white" />
-              </View>
-            </LinearGradient>
+            <Text style={styles.meetingTitle}>Weekly Team Meeting</Text>
+            <Text style={styles.meetingDate}>Today, 10:00 AM</Text>
+            <Text style={styles.meetingDescription}>Discussed project timeline and assigned tasks...</Text>
           </TouchableOpacity>
           
           <TouchableOpacity 
-            style={styles.highlightCard}
+            style={styles.meetingCard}
             onPress={() => navigation.navigate('MeetingDetails', { 
-              title: 'Project Review',
-              date: 'Yesterday'
+              meetingId: '2',
+              meetingTitle: 'Product Review Meeting',
+              meetingDate: 'Yesterday, 2:30 PM'
             })}
           >
-            <LinearGradient
-              colors={['#003366', '#1F2937']}
-              style={styles.highlightGradient}
-              start={{ x: 0, y: 0 }}
-              end={{ x: 1, y: 0 }}
-            >
-              <Text style={styles.highlightTitle}>Project Review</Text>
-              <Text style={styles.highlightDate}>Yesterday</Text>
-              <View style={styles.highlightFooter}>
-                <Text style={styles.highlightPoints}>3 key points</Text>
-                <Ionicons name="arrow-forward" size={18} color="white" />
-              </View>
-            </LinearGradient>
+            <Text style={styles.meetingTitle}>Product Review Meeting</Text>
+            <Text style={styles.meetingDate}>Yesterday, 2:30 PM</Text>
+            <Text style={styles.meetingDescription}>Reviewed new features and discussed user feedback...</Text>
           </TouchableOpacity>
         </View>
 
@@ -335,25 +348,34 @@ const styles = StyleSheet.create({
   profileButton: {
     padding: 4,
   },
-  modalOverlay: {
-    flex: 1,
+  menuOverlay: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
     flexDirection: 'row',
-  },
-  modalBackground: {
-    flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    zIndex: 1000,
   },
   menuContainer: {
     width: width * 0.8,
     maxWidth: 300,
     backgroundColor: 'white',
     height: '100%',
+    zIndex: 1001,
+    paddingTop: Platform.OS === 'ios' ? 50 : 25,
+    shadowColor: '#000',
+    shadowOffset: { width: 2, height: 0 },
+    shadowOpacity: 0.1,
+    shadowRadius: 5,
+    elevation: 10,
   },
   menuHeader: {
     padding: 16,
     borderBottomWidth: 1,
     borderBottomColor: '#E9ECEF',
     backgroundColor: '#003366',
+    marginTop: 0,
   },
   userInfo: {
     flexDirection: 'row',
@@ -436,103 +458,74 @@ const styles = StyleSheet.create({
     padding: 16,
     marginTop: 16,
   },
-  uploadCard: {
-    borderRadius: 16,
-    overflow: 'hidden',
-    elevation: 4,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-  },
-  uploadGradient: {
-    padding: 24,
-    alignItems: 'center',
-  },
-  uploadIconContainer: {
-    width: 64,
-    height: 64,
-    borderRadius: 32,
-    backgroundColor: 'rgba(255, 255, 255, 0.2)',
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginBottom: 16,
-  },
-  uploadTitle: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: 'white',
-    marginBottom: 8,
-  },
-  uploadDescription: {
-    fontSize: 14,
-    color: 'rgba(255, 255, 255, 0.8)',
-    textAlign: 'center',
-    marginBottom: 20,
-  },
-  uploadButton: {
+  actionButton: {
     backgroundColor: '#FFA500',
     paddingHorizontal: 24,
     paddingVertical: 12,
     borderRadius: 8,
+    alignItems: 'center',
   },
-  uploadButtonText: {
+  actionButtonIcon: {
+    marginRight: 8,
+  },
+  actionButtonText: {
     color: 'white',
     fontWeight: 'bold',
     fontSize: 14,
   },
-  highlightsContainer: {
-    padding: 16,
-    marginTop: 16,
+  section: {
+    marginVertical: 15,
+    padding: 15,
+    backgroundColor: '#f5f5f5',
+    borderRadius: 10,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
   },
   sectionHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 16,
+    marginBottom: 10,
   },
   sectionTitle: {
     fontSize: 18,
     fontWeight: 'bold',
     color: '#333',
   },
-  viewAllText: {
+  seeAllText: {
     fontSize: 14,
-    color: '#003366',
+    color: '#007bff',
     fontWeight: '500',
   },
-  highlightCard: {
-    borderRadius: 12,
-    overflow: 'hidden',
-    marginBottom: 12,
-    elevation: 3,
+  meetingCard: {
+    backgroundColor: '#ffffff',
+    padding: 12,
+    borderRadius: 8,
+    marginBottom: 10,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
+    shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.1,
-    shadowRadius: 4,
+    shadowRadius: 2,
+    elevation: 2,
   },
-  highlightGradient: {
-    padding: 16,
-  },
-  highlightTitle: {
+  meetingTitle: {
     fontSize: 16,
     fontWeight: 'bold',
-    color: 'white',
-    marginBottom: 8,
+    color: '#333',
+    marginBottom: 4,
   },
-  highlightDate: {
-    fontSize: 14,
-    color: 'rgba(255, 255, 255, 0.8)',
-    marginBottom: 12,
-  },
-  highlightFooter: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-  highlightPoints: {
+  meetingDate: {
     fontSize: 12,
-    color: 'rgba(255, 255, 255, 0.8)',
+    color: '#666',
+    marginBottom: 6,
+  },
+  meetingDescription: {
+    fontSize: 14,
+    color: '#444',
+    lineHeight: 20,
   },
   recentActivityContainer: {
     padding: 16,
@@ -631,6 +624,40 @@ const styles = StyleSheet.create({
   eventAttendeesText: {
     fontSize: 12,
     color: 'rgba(255, 255, 255, 0.7)',
+  },
+  menuBackground: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    zIndex: 1000,
+  },
+  menuBackgroundTouch: {
+    flex: 1,
+  },
+  menuContent: {
+    flex: 1,
+  },
+  profileImageContainer: {
+    width: 80,
+    height: 80,
+    borderRadius: 40,
+    backgroundColor: '#e1e1e1',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 10,
+  },
+  profileName: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#333',
+    marginBottom: 4,
+  },
+  profileEmail: {
+    fontSize: 14,
+    color: '#6C757D',
   },
 });
 

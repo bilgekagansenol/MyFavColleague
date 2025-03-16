@@ -14,6 +14,7 @@ import {
   ScrollView
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
+import { useNavigation } from '@react-navigation/native';
 
 const SignupScreen = ({ onSignup, onBackToLogin }) => {
   const [firstName, setFirstName] = useState('');
@@ -22,6 +23,7 @@ const SignupScreen = ({ onSignup, onBackToLogin }) => {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState('');
+  const navigation = useNavigation();
 
   const handleSignup = () => {
     // Basic validation
@@ -144,7 +146,9 @@ const SignupScreen = ({ onSignup, onBackToLogin }) => {
                 
                 <View style={styles.loginContainer}>
                   <Text style={styles.loginText}>Already have an account?</Text>
-                  <TouchableOpacity onPress={onBackToLogin}>
+                  <TouchableOpacity 
+                    onPress={() => navigation.navigate('Login')}
+                  >
                     <Text style={styles.loginLink}>Sign In</Text>
                   </TouchableOpacity>
                 </View>
