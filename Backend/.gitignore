@@ -1,0 +1,30 @@
+# Python bytecode
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environment
+venv/
+Backend/venv/
+
+# Environment variables
+.env
+*.env
+
+# Django stuff
+db.sqlite3
+*.log
+
+# VSCode, PyCharm gibi IDE dosyaları
+.vscode/
+.idea/
+
+# MacOS ve Linux dosyaları
+.DS_Store
+*.swp
+
+# Migration cache (opsiyonel)
+*/migrations/__pycache__/
+
+# Jupyter Notebook checkpointleri (kullanıyorsan)
+.ipynb_checkpoints/
