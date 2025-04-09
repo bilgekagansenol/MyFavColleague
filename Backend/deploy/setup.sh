@@ -3,7 +3,7 @@
 set -e
 
 # TODO: Set to URL of git repo.
-PROJECT_GIT_URL='https://github.com/CHANGEME'
+PROJECT_GIT_URL='https://github.com/bilgekagansenol/MyFavColleague.git'
 
 PROJECT_BASE_PATH='/usr/local/apps/profiles-rest-api'
 
@@ -11,12 +11,14 @@ PROJECT_BASE_PATH='/usr/local/apps/profiles-rest-api'
 locale-gen en_GB.UTF-8
 
 # Install Python, SQLite and pip
-echo "Installing dependencies..."
+echo "Installing dependencies..."  
 apt-get update
 apt-get install -y python3-dev python3-venv sqlite python-pip supervisor nginx git
 
 mkdir -p $PROJECT_BASE_PATH
-git clone $PROJECT_GIT_URL $PROJECT_BASE_PATH
+
+git clone --branch bilgebackend $PROJECT_GIT_URL $PROJECT_BASE_PATH
+cd $PROJECT_BASE_PATH/Backend
 
 python3 -m venv $PROJECT_BASE_PATH/env
 
