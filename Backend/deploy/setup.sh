@@ -30,7 +30,8 @@ python3 -m venv env
 
 # Gerekli Python paketlerini yükle
 env/bin/pip install --upgrade pip
-env/bin/pip install -r requirements.txt uwsgi==2.0.21
+env/bin/pip install -r requirements.txt
+
 
 # Veritabanı işlemleri
 env/bin/python manage.py migrate
