@@ -14,6 +14,8 @@ class MeetingItemManager(models.Manager):
             meeting_audio_recording = audio
         )
         return meeting
+    
+    
     def delete_meeting(self,pk,user):
         """deleting meeting with audio if its there"""
         try:
