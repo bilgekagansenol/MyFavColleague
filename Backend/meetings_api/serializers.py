@@ -3,7 +3,7 @@ from meetings_api import view ,models
 
 
 class MeetingItemSerializer(serializers.ModelSerializer):
-    
+    """handle serialization  data """
     class Meta:
         model = models.MeetingItem
         fields = '__all__'
@@ -16,6 +16,7 @@ class MeetingItemSerializer(serializers.ModelSerializer):
            }
         }
     def create(self, validated_data):
+        """create function  that takes audio and user"""
         meeting = models.MeetingItem.objects.create_MeetingItem(
             user = self.context['request'].user,
             audio = validated_data['meeting_audio_recording'],
