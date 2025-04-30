@@ -11,19 +11,63 @@ import {
   Animated,
   Dimensions,
   Platform,
-  Image
+  Image,
+  TextInput
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
+import { useActions } from '../context/ActionsContext';
 
 const { width } = Dimensions.get('window');
 
-const HomeScreen = (props) => {
-  const navigation = useNavigation();
+const HomeScreen = ({ navigation }) => {
+  const { actions, toggleAction } = useActions();
   const [menuVisible, setMenuVisible] = useState(false);
   const slideAnim = useRef(new Animated.Value(-width * 0.8)).current;
   const backgroundOpacity = useRef(new Animated.Value(0)).current;
+  const [newAction, setNewAction] = useState('');
+  const [newActionDeadline, setNewActionDeadline] = useState('');
+
+  // Örnek key point verileri
+  const [keyPoints, setKeyPoints] = useState([
+    {
+      id: 1,
+      meeting: 'Weekly Team Meeting',
+      point: 'Team agreed on the new project timeline',
+      responsible: 'Damla',
+      date: 'Today, 10:00 AM',
+      meetingId: '1'
+    },
+    {
+      id: 2,
+      meeting: 'Product Review Meeting',
+      point: 'Next sprint planning scheduled for next Monday',
+      responsible: 'Damla',
+      date: 'Yesterday, 2:30 PM',
+      meetingId: '2'
+    },
+    {
+      id: 3,
+      meeting: 'Client Presentation',
+      point: 'Client demo planned for the end of the month',
+      responsible: 'Ahmet',
+      date: '12 May, 11:00 AM',
+      meetingId: '3'
+    }
+  ]);
+
+  // Toplantı isimlerini Türkçeleştirme fonksiyonu
+  const getMeetingTitle = (meeting) => {
+    const meetingTitles = {
+      'Weekly Team Meeting': 'Haftalık Ekip Toplantısı',
+      'Product Review Meeting': 'Ürün İnceleme Toplantısı',
+      'Client Presentation': 'Müşteri Sunumu',
+      'Sprint Planning': 'Sprint Planlama',
+      'Design Review': 'Tasarım İnceleme'
+    };
+    return meetingTitles[meeting] || meeting;
+  };
 
   const navigateToRecentAnalysis = () => {
     // Navigate to Recent Analysis screen
@@ -71,8 +115,8 @@ const HomeScreen = (props) => {
           <View style={styles.profileImageContainer}>
             <Ionicons name="person" size={40} color="#666" />
           </View>
-          <Text style={styles.profileName}>John Doe</Text>
-          <Text style={styles.profileEmail}>john.doe@example.com</Text>
+          <Text style={styles.profileName}>Damla Radan</Text>
+          <Text style={styles.profileEmail}>Product Owner</Text>
         </View>
         
         <View style={styles.menuItems}>
@@ -134,6 +178,87 @@ const HomeScreen = (props) => {
     );
   };
 
+  const navigateToMeeting = (meetingId) => {
+    navigation.navigate('MeetingDetails', {
+      meetingId: meetingId,
+      meetingTitle: keyPoints.find(point => point.meetingId === meetingId)?.meeting,
+      meetingDate: keyPoints.find(point => point.meetingId === meetingId)?.date
+    });
+  };
+
+  const renderKeyPoints = () => {
+    return keyPoints.map((point) => (
+      <TouchableOpacity 
+        style={styles.todoItem} 
+        key={point.id}
+        onPress={() => navigateToMeeting(point.meetingId)}
+      >
+        <View style={styles.todoIconContainer}>
+          <Ionicons name="checkmark-circle-outline" size={24} color="#003366" />
+        </View>
+        <View style={styles.todoContent}>
+          <View style={styles.todoHeader}>
+            <Text style={styles.todoTitle}>{point.point}</Text>
+            <View style={[
+              styles.responsibleBadge,
+              point.responsible === 'Damla' && styles.myResponsibleBadge
+            ]}>
+              <Text style={styles.responsibleText}>Responsible: {point.responsible}</Text>
+            </View>
+          </View>
+          <View style={styles.todoFooter}>
+            <Text style={styles.todoMeeting}>{point.meeting}</Text>
+            <Text style={styles.todoDate}>{point.date}</Text>
+          </View>
+        </View>
+      </TouchableOpacity>
+    ));
+  };
+
+  const addNewAction = () => {
+    if (newAction.trim() && newActionDeadline.trim()) {
+      const newActionItem = {
+        id: Date.now(),
+        title: newAction,
+        deadline: newActionDeadline,
+        completed: false
+      };
+      setActions([...actions, newActionItem]);
+      setNewAction('');
+      setNewActionDeadline('');
+    }
+  };
+
+  const navigateToMeetingActions = () => {
+    navigation.navigate('MeetingActions', { actions });
+  };
+
+  const renderActions = () => {
+    return actions.map((action) => (
+      <View key={action.id} style={styles.todoItem}>
+        <TouchableOpacity 
+          style={styles.todoIconContainer}
+          onPress={() => toggleAction(action.id)}
+        >
+          <Ionicons 
+            name={action.completed ? "checkmark-circle" : "checkmark-circle-outline"} 
+            size={24} 
+            color={action.completed ? "#003366" : "#666"} 
+          />
+        </TouchableOpacity>
+        <View style={styles.todoContent}>
+          <Text style={[
+            styles.todoTitle,
+            action.completed && styles.completedText
+          ]}>
+            {action.title}
+          </Text>
+          <Text style={styles.todoDate}>{action.deadline}</Text>
+        </View>
+      </View>
+    ));
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle="dark-content" />
@@ -145,13 +270,10 @@ const HomeScreen = (props) => {
         </TouchableOpacity>
         <Text style={styles.headerTitle}>MyFavColleague</Text>
         <View style={styles.headerRight}>
-          <TouchableOpacity style={styles.notificationButton}>
-            <Ionicons name="notifications-outline" size={24} color="#333" />
-          </TouchableOpacity>
           <TouchableOpacity 
             style={styles.profileButton}
             onPress={() => {
-              console.log('Profile button pressed'); // Debug için log
+              console.log('Profile button pressed');
               navigation.navigate('Profile');
             }}
           >
@@ -195,7 +317,7 @@ const HomeScreen = (props) => {
         >
           <View style={styles.welcomeContent}>
             <Text style={styles.welcomeText}>Welcome back,</Text>
-            <Text style={styles.userName}>John Doe</Text>
+            <Text style={styles.userName}>Damla Radan</Text>
             <Text style={styles.welcomeSubtext}>
               Meet smarter, work better.
             </Text>
@@ -257,58 +379,46 @@ const HomeScreen = (props) => {
           </TouchableOpacity>
         </View>
 
-        {/* Recent Activity */}
-        <View style={styles.recentActivityContainer}>
+        {/* Meeting Tasks Section */}
+        <View style={styles.todoContainer}>
           <View style={styles.sectionHeader}>
-            <Text style={styles.sectionTitle}>Recent Activity</Text>
-            <TouchableOpacity>
-              <Text style={styles.viewAllText}>View All</Text>
+            <Text style={styles.sectionTitle}>Meeting Tasks</Text>
+            <TouchableOpacity 
+              onPress={() => navigation.navigate('MeetingActions')}
+            >
+              <Text style={styles.seeAllText}>View All</Text>
             </TouchableOpacity>
           </View>
           
-          <View style={styles.activityCard}>
-            <View style={styles.activityIconContainer}>
-              <Ionicons name="cloud-upload-outline" size={24} color="#003366" />
-            </View>
-            <View style={styles.activityContent}>
-              <Text style={styles.activityTitle}>Recording Uploaded</Text>
-              <Text style={styles.activityTime}>2 hours ago</Text>
-            </View>
-          </View>
-          
-          <View style={styles.activityCard}>
-            <View style={styles.activityIconContainer}>
-              <Ionicons name="star-outline" size={24} color="#FFA500" />
-            </View>
-            <View style={styles.activityContent}>
-              <Text style={styles.activityTitle}>Analysis Favorited</Text>
-              <Text style={styles.activityTime}>Yesterday</Text>
-            </View>
+          <View style={styles.todoCard}>
+            {actions.slice(0, 3).map((action) => (
+              <View key={action.id} style={styles.todoItem}>
+                <TouchableOpacity 
+                  style={styles.todoIconContainer}
+                  onPress={() => toggleAction(action.id)}
+                >
+                  <Ionicons 
+                    name={action.completed ? "checkmark-circle" : "checkmark-circle-outline"} 
+                    size={24} 
+                    color={action.completed ? "#003366" : "#666"} 
+                  />
+                </TouchableOpacity>
+                <View style={styles.todoContent}>
+                  <Text style={[
+                    styles.todoTitle,
+                    action.completed && styles.completedText
+                  ]}>
+                    {action.title}
+                  </Text>
+                  <Text style={styles.todoDate}>{action.deadline}</Text>
+                </View>
+              </View>
+            ))}
           </View>
         </View>
 
-        {/* Upcoming Events */}
-        <View style={styles.upcomingEventsContainer}>
-          <Text style={styles.sectionTitle}>Upcoming Events</Text>
-          <View style={styles.eventCard}>
-            <LinearGradient
-              colors={['#003366', '#1F2937']}
-              style={styles.eventGradient}
-            >
-              <View style={styles.eventDateContainer}>
-                <Text style={styles.eventMonth}>JUN</Text>
-                <Text style={styles.eventDay}>15</Text>
-              </View>
-              <View style={styles.eventDetails}>
-                <Text style={styles.eventTitle}>Team Meeting</Text>
-                <Text style={styles.eventTime}>10:00 AM - 11:30 AM</Text>
-                <View style={styles.eventAttendees}>
-                  <Text style={styles.eventAttendeesText}>5 Attendees</Text>
-                </View>
-              </View>
-            </LinearGradient>
-          </View>
-        </View>
+        {/* Footer Space */}
+        <View style={styles.footerSpace} />
       </ScrollView>
     </SafeAreaView>
   );
@@ -340,10 +450,6 @@ const styles = StyleSheet.create({
   headerRight: {
     flexDirection: 'row',
     alignItems: 'center',
-  },
-  notificationButton: {
-    padding: 4,
-    marginRight: 12,
   },
   profileButton: {
     padding: 4,
@@ -527,103 +633,79 @@ const styles = StyleSheet.create({
     color: '#444',
     lineHeight: 20,
   },
-  recentActivityContainer: {
+  todoContainer: {
     padding: 16,
     marginTop: 8,
   },
-  activityCard: {
-    flexDirection: 'row',
+  todoCard: {
     backgroundColor: 'white',
     borderRadius: 12,
     padding: 16,
-    marginBottom: 12,
-    alignItems: 'center',
-    elevation: 2,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.1,
     shadowRadius: 2,
+    elevation: 2,
   },
-  activityIconContainer: {
+  todoItem: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    marginBottom: 16,
+    paddingHorizontal: 8,
+  },
+  todoIconContainer: {
     width: 40,
     height: 40,
     borderRadius: 20,
     backgroundColor: '#F0F0F0',
     justifyContent: 'center',
     alignItems: 'center',
-    marginRight: 16,
+    marginRight: 12,
+    marginTop: 4,
   },
-  activityContent: {
+  todoContent: {
     flex: 1,
   },
-  activityTitle: {
+  todoHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
+    marginBottom: 4,
+  },
+  todoTitle: {
     fontSize: 14,
     fontWeight: '500',
     color: '#333',
-    marginBottom: 4,
+    flex: 1,
+    marginRight: 8,
   },
-  activityTime: {
+  responsibleBadge: {
+    backgroundColor: '#E6F3FF',
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 12,
+    alignSelf: 'flex-start',
+  },
+  responsibleText: {
+    fontSize: 12,
+    color: '#003366',
+    fontWeight: '500',
+  },
+  todoFooter: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  todoMeeting: {
     fontSize: 12,
     color: '#6C757D',
   },
-  upcomingEventsContainer: {
-    padding: 16,
-    marginTop: 8,
-    marginBottom: 24,
+  todoDate: {
+    fontSize: 11,
+    color: '#6C757D',
   },
-  eventCard: {
-    borderRadius: 12,
-    overflow: 'hidden',
-    elevation: 3,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-  },
-  eventGradient: {
-    flexDirection: 'row',
-    padding: 16,
-  },
-  eventDateContainer: {
-    width: 60,
-    height: 70,
-    backgroundColor: 'rgba(255, 255, 255, 0.2)',
-    borderRadius: 8,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginRight: 16,
-  },
-  eventMonth: {
-    fontSize: 14,
-    fontWeight: '500',
-    color: 'white',
-  },
-  eventDay: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: 'white',
-  },
-  eventDetails: {
-    flex: 1,
-  },
-  eventTitle: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: 'white',
-    marginBottom: 4,
-  },
-  eventTime: {
-    fontSize: 14,
-    color: 'rgba(255, 255, 255, 0.8)',
-    marginBottom: 8,
-  },
-  eventAttendees: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  eventAttendeesText: {
-    fontSize: 12,
-    color: 'rgba(255, 255, 255, 0.7)',
+  footerSpace: {
+    height: 24,
   },
   menuBackground: {
     position: 'absolute',
@@ -658,6 +740,34 @@ const styles = StyleSheet.create({
   profileEmail: {
     fontSize: 14,
     color: '#6C757D',
+  },
+  myResponsibleBadge: {
+    backgroundColor: '#D1E7FF',
+    borderColor: '#003366',
+    borderWidth: 1,
+  },
+  addActionContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: 16,
+    paddingHorizontal: 8,
+  },
+  input: {
+    flex: 1,
+    height: 40,
+    borderWidth: 1,
+    borderColor: '#E0E0E0',
+    borderRadius: 8,
+    paddingHorizontal: 12,
+    marginRight: 8,
+    fontSize: 14,
+  },
+  addButton: {
+    padding: 8,
+  },
+  completedText: {
+    textDecorationLine: 'line-through',
+    color: '#666',
   },
 });
 
