@@ -1,6 +1,7 @@
-import React from 'react';
-import { View, Text, StyleSheet, ScrollView, SafeAreaView } from 'react-native';
+import React, { useState } from 'react';
+import { View, Text, StyleSheet, ScrollView, SafeAreaView, TouchableOpacity } from 'react-native';
 import CommonHeader from '../components/CommonHeader';
+import { Ionicons } from '@expo/vector-icons';
 
 const MeetingDetails = ({ route }) => {
   // route.params'dan toplantı bilgilerini alalım
@@ -109,22 +110,22 @@ const styles = StyleSheet.create({
   },
   keyPointItem: {
     flexDirection: 'row',
-    alignItems: 'flex-start',
-    marginBottom: 8,
+    alignItems: 'center',
+    marginBottom: 12,
+    paddingRight: 8,
   },
   bulletPoint: {
     width: 8,
     height: 8,
     borderRadius: 4,
-    backgroundColor: '#3b5998',
-    marginTop: 7,
-    marginRight: 10,
+    backgroundColor: '#003366',
+    marginRight: 12,
   },
   keyPointText: {
     flex: 1,
-    fontSize: 15,
-    color: '#444',
-    lineHeight: 22,
+    fontSize: 14,
+    color: '#333',
+    lineHeight: 20,
   },
 });
 

@@ -3,6 +3,7 @@ import { StyleSheet, View } from 'react-native';
 import { useState, useEffect } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
+import { ActionsProvider } from './context/ActionsContext';
 import MainScreen from './Screens/MainScreen';
 import LoginScreen from './Screens/LoginScreen';
 import SignupScreen from './Screens/SignupScreen';
@@ -20,6 +21,7 @@ import ChangePasswordScreen from './Screens/ChangePasswordScreen';
 import MeetingsList from './Screens/MeetingsList';
 import MeetingDetails from './Screens/MeetingDetails';
 import UploadScreen from './Screens/UploadScreen';
+import MeetingActions from './Screens/MeetingActions';
 
 const Stack = createStackNavigator();
 const AuthStack = createStackNavigator();
@@ -156,21 +158,24 @@ export default function App() {
   };
 
   return (
-    <NavigationContainer>
-      <Stack.Navigator screenOptions={{ headerShown: false }}>
-        <Stack.Screen name="Login" component={LoginScreen} />
-        <Stack.Screen name="Signup" component={SignupScreen} />
-        <Stack.Screen name="ForgotPassword" component={ForgotPasswordScreen} />
-        <Stack.Screen name="ResetPassword" component={ResetPasswordScreen} />
-        <Stack.Screen name="Home" component={HomeScreen} />
-        <Stack.Screen name="MeetingsList" component={MeetingsList} />
-        <Stack.Screen name="MeetingDetails" component={MeetingDetails} />
-        <Stack.Screen name="Profile" component={ProfileScreen} />
-        <Stack.Screen name="About" component={AboutScreen} />
-        <Stack.Screen name="ChangePassword" component={ChangePasswordScreen} />
-        <Stack.Screen name="Upload" component={UploadScreen} />
-      </Stack.Navigator>
-    </NavigationContainer>
+    <ActionsProvider>
+      <NavigationContainer>
+        <Stack.Navigator screenOptions={{ headerShown: false }}>
+          <Stack.Screen name="Login" component={LoginScreen} />
+          <Stack.Screen name="Signup" component={SignupScreen} />
+          <Stack.Screen name="ForgotPassword" component={ForgotPasswordScreen} />
+          <Stack.Screen name="ResetPassword" component={ResetPasswordScreen} />
+          <Stack.Screen name="Home" component={HomeScreen} />
+          <Stack.Screen name="MeetingsList" component={MeetingsList} />
+          <Stack.Screen name="MeetingDetails" component={MeetingDetails} />
+          <Stack.Screen name="Profile" component={ProfileScreen} />
+          <Stack.Screen name="About" component={AboutScreen} />
+          <Stack.Screen name="ChangePassword" component={ChangePasswordScreen} />
+          <Stack.Screen name="Upload" component={UploadScreen} />
+          <Stack.Screen name="MeetingActions" component={MeetingActions} />
+        </Stack.Navigator>
+      </NavigationContainer>
+    </ActionsProvider>
   );
 }
 

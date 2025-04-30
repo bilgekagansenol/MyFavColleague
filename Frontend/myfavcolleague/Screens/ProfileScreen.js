@@ -16,9 +16,9 @@ import { LinearGradient } from 'expo-linear-gradient';
 const ProfileScreen = ({ navigation }) => {
   // Örnek kullanıcı verileri
   const [user, setUser] = useState({
-    name: 'John Doe',
-    email: 'john.doe@example.com',
-    position: 'Product Manager',
+    name: 'Damla Radan',
+    email: 'damla.radan@example.com',
+    position: 'Product Owner',
     company: 'Tech Innovations Inc.',
     profileImage: null, // Gerçek uygulamada bir resim URL'si olacak
   });
@@ -103,41 +103,26 @@ const ProfileScreen = ({ navigation }) => {
           <Text style={styles.sectionTitle}>Settings</Text>
           
           <View style={styles.settingsCard}>
-            <View style={styles.settingItem}>
-              <View style={styles.settingInfo}>
-                <Ionicons name="notifications-outline" size={22} color="#003366" />
-                <Text style={styles.settingText}>Notifications</Text>
-              </View>
-              {/* Notifications toggle kaldırıldı */}
-            </View>
-          </View>
-        </View>
-        
-        {/* Account Section */}
-        <View style={styles.sectionContainer}>
-          <Text style={styles.sectionTitle}>Account</Text>
-          
-          <View style={styles.accountCard}>
             <TouchableOpacity 
-              style={styles.accountItem}
+              style={styles.settingItem}
               onPress={() => navigation.navigate('ChangePassword')}
             >
-              <View style={styles.accountInfo}>
+              <View style={styles.settingInfo}>
                 <Ionicons name="lock-closed-outline" size={22} color="#003366" />
-                <Text style={styles.accountText}>Change Password</Text>
+                <Text style={styles.settingText}>Change Password</Text>
               </View>
               <Ionicons name="chevron-forward" size={20} color="#6C757D" />
             </TouchableOpacity>
             
-            <View style={styles.accountDivider} />
+            <View style={styles.settingDivider} />
             
             <TouchableOpacity 
-              style={styles.accountItem}
+              style={styles.settingItem}
               onPress={() => navigation.navigate('About')}
             >
-              <View style={styles.accountInfo}>
+              <View style={styles.settingInfo}>
                 <Ionicons name="information-circle-outline" size={22} color="#003366" />
-                <Text style={styles.accountText}>About</Text>
+                <Text style={styles.settingText}>About</Text>
               </View>
               <Ionicons name="chevron-forward" size={20} color="#6C757D" />
             </TouchableOpacity>
@@ -186,7 +171,7 @@ const styles = StyleSheet.create({
   },
   headerTitle: {
     fontSize: 18,
-    fontWeight: 'bold',
+    fontWeight: '600',
     color: 'white',
   },
   scrollView: {
@@ -260,7 +245,7 @@ const styles = StyleSheet.create({
   },
   sectionTitle: {
     fontSize: 18,
-    fontWeight: 'bold',
+    fontWeight: '600',
     color: '#333',
     marginBottom: 12,
     paddingLeft: 4,
@@ -274,12 +259,13 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.05,
     shadowRadius: 2,
     elevation: 1,
+    marginBottom: 16,
   },
   settingItem: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingVertical: 12,
+    paddingVertical: 16,
     paddingHorizontal: 16,
   },
   settingInfo: {
@@ -291,34 +277,7 @@ const styles = StyleSheet.create({
     color: '#333',
     marginLeft: 12,
   },
-  accountCard: {
-    backgroundColor: 'white',
-    borderRadius: 12,
-    padding: 4,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.05,
-    shadowRadius: 2,
-    elevation: 1,
-    marginBottom: 16,
-  },
-  accountItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingVertical: 16,
-    paddingHorizontal: 16,
-  },
-  accountInfo: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  accountText: {
-    fontSize: 16,
-    color: '#333',
-    marginLeft: 12,
-  },
-  accountDivider: {
+  settingDivider: {
     height: 1,
     backgroundColor: '#E9ECEF',
     marginHorizontal: 16,
@@ -339,7 +298,7 @@ const styles = StyleSheet.create({
   },
   logoutText: {
     fontSize: 16,
-    fontWeight: 'bold',
+    fontWeight: '600',
     color: 'white',
     marginLeft: 8,
   },
