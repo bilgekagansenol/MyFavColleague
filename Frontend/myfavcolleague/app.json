@@ -30,5 +30,11 @@
       }
     },
     "owner": "myfavcolleague"
+  },
+  "dependencies": {
+    "expo": "~53.0.0",
+    "@expo/vector-icons": "^14.0.0",
+    "expo-linear-gradient": "~15.0.0",
+    "expo-status-bar": "~2.1.0"
   }
 }

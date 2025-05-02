@@ -25,22 +25,59 @@ const SignupScreen = ({ onSignup, onBackToLogin }) => {
   const [error, setError] = useState('');
   const navigation = useNavigation();
 
-  const handleSignup = () => {
+  const handleSignup = async () => {
     // Basic validation
     if (!firstName || !lastName || !email || !password || !confirmPassword) {
-      setError('Please fill in all fields');
+      setError('Lütfen tüm alanları doldurun');
       return;
     }
     
     if (password !== confirmPassword) {
-      setError('Passwords do not match');
+      setError('Şifreler eşleşmiyor');
       return;
     }
     
-    // Here we can implement real registration
-    // For now, we're simply signing up
-    setError('');
-    onSignup();
+    try {
+      // Önce CSRF token'ı al
+      const csrfResponse = await fetch('http://127.0.0.1:8000/api/csrf-token/', {
+        method: 'GET',
+        credentials: 'include',
+      });
+      
+      const csrfToken = await csrfResponse.json();
+      
+      // Şimdi kayıt isteğini gönder
+      const response = await fetch('http://127.0.0.1:8000/api/profile/', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          'X-CSRFToken': csrfToken.csrfToken,
+        },
+        credentials: 'include',
+        body: JSON.stringify({
+          email: email,
+          name: firstName,
+          password: password
+        }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Kayıt işlemi başarısız oldu');
+      }
+
+      const data = await response.json();
+      setError('');
+      onSignup();
+    } catch (error) {
+      console.error('Kayıt hatası:', error);
+      if (error.message === 'Network request failed') {
+        setError('Sunucuya bağlanılamıyor. Lütfen internet bağlantınızı kontrol edin.');
+      } else {
+        setError(error.message || 'Bir hata oluştu. Lütfen tekrar deneyin.');
+      }
+    }
   };
 
   return (
