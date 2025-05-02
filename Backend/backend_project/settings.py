@@ -28,7 +28,9 @@ DEBUG = bool(int(os.environ.get('DEBUG',1)))
 
 ##aws için ekledim ilerde değiştirilecek
 ALLOWED_HOSTS = ['ec2-13-61-151-249.eu-north-1.compute.amazonaws.com',
-                 '127.0.0.1']
+                 '127.0.0.1',
+                        'damlaradan.pythonanywhere.com',
+]
 
 
 # Application definition
