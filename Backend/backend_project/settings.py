@@ -44,7 +44,10 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'rest_framework.authtoken',
-    'profiles_api',
+    'meetings_api',
+    'user_api',
+    'openai',
+
     ]
 
 MIDDLEWARE = [
@@ -118,7 +121,6 @@ USE_I18N = True
 
 USE_TZ = True
 
-
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
 
@@ -129,7 +131,19 @@ STATIC_URL = 'static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-AUTH_USER_MODEL = 'profiles_api.UserProfile' 
+AUTH_USER_MODEL = 'user_api.UserProfile'
 
-##AWS IÇIN EKLIYORUM
-STATIC_ROOT = 'static/'
+#deneme
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.TokenAuthentication',
+    ]
+}
+
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = 'blgkgnsnl@gmail.com'
+EMAIL_HOST_PASSWORD = 'taxy eken dgcd bptp'  # Gerçek Gmail şifren değil!

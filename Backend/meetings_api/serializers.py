@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from meetings_api import view ,models
+from meetings_api import views ,models
 
 
 class MeetingItemSerializer(serializers.ModelSerializer):
@@ -15,14 +15,7 @@ class MeetingItemSerializer(serializers.ModelSerializer):
               'read_only': True
            }
         }
-    def create(self, validated_data):
-        """create function  that takes audio and user"""
-        meeting = models.MeetingItem.objects.create_MeetingItem(
-            user = self.context['request'].user,
-            audio = validated_data['meeting_audio_recording'],
-            )
         
-        return meeting
     
 
  
