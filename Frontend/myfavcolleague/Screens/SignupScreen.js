@@ -38,45 +38,24 @@ const SignupScreen = ({ onSignup, onBackToLogin }) => {
     }
     
     try {
-      // Önce CSRF token'ı al
-      const csrfResponse = await fetch('http://127.0.0.1:8000/api/csrf-token/', {
-        method: 'GET',
-        credentials: 'include',
-      });
-      
-      const csrfToken = await csrfResponse.json();
-      
-      // Şimdi kayıt isteğini gönder
-      const response = await fetch('http://127.0.0.1:8000/api/profile/', {
+      const response = await fetch('https://damlaradan.pythonanywhere.com/api/profile/', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'Accept': 'application/json',
-          'X-CSRFToken': csrfToken.csrfToken,
         },
-        credentials: 'include',
         body: JSON.stringify({
           email: email,
-          name: firstName,
+          name: firstName+' '+lastName,
           password: password
         }),
       });
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || 'Kayıt işlemi başarısız oldu');
-      }
-
-      const data = await response.json();
       setError('');
-      onSignup();
+      navigation.navigate('Login');
     } catch (error) {
       console.error('Kayıt hatası:', error);
-      if (error.message === 'Network request failed') {
-        setError('Sunucuya bağlanılamıyor. Lütfen internet bağlantınızı kontrol edin.');
-      } else {
-        setError(error.message || 'Bir hata oluştu. Lütfen tekrar deneyin.');
-      }
+      setError(error.message);
     }
   };
 

@@ -15,6 +15,7 @@ import {
   Image
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const { width, height } = Dimensions.get('window');
 
@@ -23,19 +24,38 @@ const LoginScreen = ({ navigation, onLogin, onNavigateToSignup, onForgotPassword
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
 
-  const handleLogin = () => {
+  const handleLogin = async () => {
     if (!email || !password) {
-      setError('Please enter email and password');
+      setError('Lütfen e-posta ve şifre girin');
       return;
     }
-    
-    // Basit doğrulama - herhangi bir e-posta/şifre kombinasyonu kabul edilir
-    setError('');
-    
-    // Ana sayfaya yönlendir
-    // Bu, App.js'deki isLoggedIn state'ini değiştirmez
-    // Sadece demo amaçlı olarak doğrudan HomeScreen'e gider
-    navigation.navigate('Home');
+
+    try {
+      const response = await fetch('https://damlaradan.pythonanywhere.com/api/login/', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+        },
+        body: JSON.stringify({
+          email: email,
+          password: password
+        }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Giriş başarısız');
+      }
+
+      const data = await response.json();
+      await AsyncStorage.setItem('token', data.token);
+
+      setError('');
+      navigation.navigate('Home');
+    } catch (error) {
+      setError(error.message || 'Bir hata oluştu. Lütfen tekrar deneyin.');
+    }
   };
 
   return (

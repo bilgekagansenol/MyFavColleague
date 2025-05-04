@@ -39,6 +39,7 @@ const AuthNavigator = () => (
 const AppNavigator = () => (
   <AppStack.Navigator screenOptions={{ headerShown: false }}>
     <AppStack.Screen name="Home" component={HomeScreen} />
+    <AppStack.Screen name="Login" component={LoginScreen} />
     <AppStack.Screen name="RecentAnalysis" component={RecentAnalysisScreen} />
     <AppStack.Screen name="MeetingDetails" component={MeetingDetailsScreen} />
     <AppStack.Screen name="Profile" component={ProfileScreen} />
