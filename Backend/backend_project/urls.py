@@ -12,7 +12,12 @@ from user_api.views import (
 from meetings_api.views.meeting_item_view import MeetingItemAPIView
 from meetings_api.views.MeetingItemListAPIView import MeetingItemListAPIView
 from meetings_api.views.meeting_item_view_favourite import UpdateFavouriteAPIView
+from meetings_api.views.meeting_item_view_titlechange import meetingItemTitleChangeAPIView
+from meetings_api.views.meetng_showing_oneobject import MeetingItemShowOneObject
+
+
 router = DefaultRouter()
+
 router.register('user', UserProfileViewSet, basename='user')
 
 urlpatterns = [
@@ -24,7 +29,9 @@ urlpatterns = [
     path('api/reset-password-confirm/', PasswordResetConfirmView.as_view(), name='reset-password-confirm'),
     path('api/meeting/send/', MeetingItemAPIView.as_view(),name='meeting'),
     path('api/meeting/list/',MeetingItemListAPIView.as_view(), name='meeting-list'),
-    path('api/meeting/<int:meeting_id>/favourite/', UpdateFavouriteAPIView.as_view())
+    path('api/meeting/<int:meeting_id>/favourite/', UpdateFavouriteAPIView.as_view()),
+    path('api/meeting/<int:meeting_id>/titlechange/', meetingItemTitleChangeAPIView.as_view()),
+    path('api/meeting/<int:meeting_id>/', MeetingItemShowOneObject.as_view()),
 
-]
+]   
     
