@@ -31,12 +31,12 @@ class MeetingItemAPIView(APIView):
             plain_text = self.transcribe_with_whisper(temp_audio_path)
 
             # STEP 3: LLM'den summary ve keypoints al (örnek simülasyon)
-            summary, key_points = self.get_summary_and_keypoints(plain_text)
+            meeting_name, summary, key_points = self.get_summary_and_keypoints(plain_text)
 
             # STEP 4: Model'e sadece gerekli verileri kaydet
             meeting = MeetingItem.objects.create(
                 user=request.user,
-                meeting_name="New Meeting",
+                meeting_name=meeting_name,
                 meeting_summary=summary,
                 meeting_key_points=key_points
             )
@@ -55,22 +55,54 @@ class MeetingItemAPIView(APIView):
 
     def transcribe_with_whisper(self, audio_path):
         client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
-        with open(audio_path ,"rb") as audio_file:
+        with open(audio_path, "rb") as audio_file:
             transcription = client.audio.transcriptions.create(
-                model = "gpt-4o-transcribe",
+                model="whisper-1",  # ✅ whisper-1 kullan, gpt-4o-transcribe değil
                 file=audio_file,
                 response_format="text"
-                
             )
-        return transcription.text
+        return transcription  
+
 
     def get_summary_and_keypoints(self, plain_text):
-        # Burası LLM çağrısı yerine geçer, şimdilik taklit ediyoruz
-        summary = "Bu toplantının özeti budur."
-        key_points = ["Madde 1", "Madde 2", "Madde 3"]
-        return summary, key_points
+        client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
-    def get(self, request):
-        meetings = MeetingItem.objects.filter(user=request.user)
-        serializer = MeetingItemSerializer(meetings, many=True)
-        return Response(serializer.data)
+        system_prompt = """
+        Aşağıdaki toplantı metni için:
+        1. Toplantıya uygun kısa bir başlık üret (en fazla 10 kelime)
+        2. Toplantıyı özetle
+        3. En fazla 5 madde ile önemli noktaları çıkar.
+
+        Format şu şekilde olmalı:
+
+        Title: <toplantı başlığı>
+        Summary: <özet>
+        Key Points:
+        - Nokta 1
+        - Nokta 2
+        """
+
+        completion = client.chat.completions.create(
+            model="gpt-4o",
+            messages=[
+                {"role": "system", "content": system_prompt},
+                {"role": "user", "content": plain_text}
+            ],
+            temperature=0.7,
+        )
+
+        response_text = completion.choices[0].message.content
+
+        # Parçala
+        title, summary, keypoints = "Untitled Meeting", "", []
+        if "Title:" in response_text:
+            try:
+                title_part, rest = response_text.split("Summary:", 1)
+                summary_part, keypoints_part = rest.split("Key Points:", 1)
+                title = title_part.replace("Title:", "").strip()
+                summary = summary_part.strip()
+                keypoints = [line.strip("- ").strip() for line in keypoints_part.strip().split("\n") if line.startswith("-")]
+            except:
+                pass
+
+        return title, summary, keypoints
