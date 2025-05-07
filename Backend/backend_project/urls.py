@@ -1,6 +1,7 @@
 from django.urls import path , include
 from django.contrib import admin
-
+from django.conf import settings
+from django.conf.urls.static import static
 from rest_framework.routers import DefaultRouter
 from user_api.views import (
     UserProfileViewSet,
@@ -8,6 +9,7 @@ from user_api.views import (
     ChangePasswordView,
     PasswordResetRequestView,
     PasswordResetConfirmView,
+    ProfileImageUpdateAPIView,
 )
 from meetings_api.views.meeting_item_view import MeetingItemAPIView
 from meetings_api.views.MeetingItemListAPIView import MeetingItemListAPIView
@@ -32,6 +34,10 @@ urlpatterns = [
     path('api/meeting/<int:meeting_id>/favourite/', UpdateFavouriteAPIView.as_view()),
     path('api/meeting/<int:meeting_id>/titlechange/', meetingItemTitleChangeAPIView.as_view()),
     path('api/meeting/<int:meeting_id>/', MeetingItemShowOneObject.as_view()),
-
+    path('api/profile-image/' , ProfileImageUpdateAPIView.as_view(), name='update-profile-image'),
 ]   
+
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
     

@@ -115,3 +115,27 @@ class PasswordResetConfirmView(APIView):
         user.save()
 
         return Response({"message": "Password has been reset successfully."}, status=status.HTTP_200_OK)
+
+
+
+
+class ProfileImageUpdateAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def patch(self , request):
+        user = request.user
+        profile_image = request.FILES.get('profile_image')
+        
+        if not profile_image:
+            return Response({"error":"No image uploaded."}, status=status.HTTP_404_NOT_FOUND)
+        
+
+        user.profile_image = profile_image
+        user.save()
+
+        serializer = serializers.UserProfileSerializer(user)
+
+        return Response({"message":"Profile image updated.","user":serializer.data})
+    
+
+

@@ -28,28 +28,26 @@ class ChangePasswordSerailizer(serializers.Serializer):
 
 class UserProfileSerializer(serializers.ModelSerializer):
     """Serializes a user profile object"""
-    
+
+    profile_image = serializers.ImageField(read_only=True)  
+
     class Meta:
         model = models.UserProfile
-        fields = ('id' ,'email' ,  'name', 'password')
-        extra_kwargs={
-            'password':{
+        fields = ('id', 'email', 'name', 'password', 'profile_image')
+        extra_kwargs = {
+            'password': {
                 'write_only': True,
-                'style':{'input_type': 'password'}
+                'style': {'input_type': 'password'}
             }
         }
 
-    def create (self , validated_data):
-        """create and return a new user"""
+    def create(self, validated_data):
         user = models.UserProfile.objects.create_user(
             email=validated_data['email'],
             name=validated_data['name'],
-            password = validated_data['password']
+            password=validated_data['password']
         )
-
         return user
-    
-
     
 
 
