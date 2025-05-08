@@ -29,11 +29,13 @@ SECRET_KEY = 'django-insecure-a=+5l7j@uim38vopr3#ynde_0b5kqsb8tuna90mcfj5vgcv%kh
 DEBUG = bool(int(os.environ.get('DEBUG',1)))
 
 ##aws için ekledim ilerde değiştirilecek
-ALLOWED_HOSTS = ['ec2-13-61-151-249.eu-north-1.compute.amazonaws.com',
-                 '127.0.0.1',
-                        'damlaradan.pythonanywhere.com',
+ALLOWED_HOSTS = [
+    '127.0.0.1',
+    'localhost',
+    'ec2-13-61-151-249.eu-north-1.compute.amazonaws.com',
+    'damlaradan.pythonanywhere.com',
+    '.ngrok-free.app',  # Tüm ngrok linklerini kapsar
 ]
-
 
 # Application definition
 
