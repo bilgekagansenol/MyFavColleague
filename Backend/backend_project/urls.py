@@ -17,6 +17,8 @@ from meetings_api.views.meeting_item_view_favourite import UpdateFavouriteAPIVie
 from meetings_api.views.meeting_item_view_titlechange import meetingItemTitleChangeAPIView
 from meetings_api.views.meetng_showing_oneobject import MeetingItemShowOneObject
 
+from tasks_api import urls
+
 
 router = DefaultRouter()
 
@@ -35,6 +37,7 @@ urlpatterns = [
     path('api/meeting/<int:meeting_id>/titlechange/', meetingItemTitleChangeAPIView.as_view()),
     path('api/meeting/<int:meeting_id>/', MeetingItemShowOneObject.as_view()),
     path('api/profile-image/' , ProfileImageUpdateAPIView.as_view(), name='update-profile-image'),
+    path('',include('tasks_api.urls')),
 ]   
 
 if settings.DEBUG:

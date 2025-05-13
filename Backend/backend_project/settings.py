@@ -51,7 +51,7 @@ INSTALLED_APPS = [
     'meetings_api',
     'user_api',
     'openai',
-
+    'tasks_api',
     ]
 
 MIDDLEWARE = [
