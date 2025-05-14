@@ -18,6 +18,8 @@ from meetings_api.views.meeting_item_view_favourite import UpdateFavouriteAPIVie
 from meetings_api.views.meeting_item_view_titlechange import meetingItemTitleChangeAPIView
 from meetings_api.views.meetng_showing_oneobject import MeetingItemShowOneObject
 from meetings_api.views.meeting_item_view_delete import DeleteMeetingItem
+from meetings_api.views.meeting_item_view_latesttwoobjects import MeetingItemViewLatestTwoObjects
+
 from tasks_api import urls
 
 
@@ -55,6 +57,7 @@ urlpatterns = [
     path('swagger/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
     path('redoc/',   schema_view.with_ui('redoc',   cache_timeout=0), name='schema-redoc'),
     path('api/meeting/<int:meeting_id>/delete/', DeleteMeetingItem.as_view(),  name='meeting-delete'), 
+    path('api/meeting/latest-two-object/' , MeetingItemViewLatestTwoObjects.as_view(), name='last-two-objects'),
 ]   
 
 if settings.DEBUG:
