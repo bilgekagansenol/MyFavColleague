@@ -2,6 +2,7 @@ from django.urls import path , include
 from django.contrib import admin
 from django.conf import settings
 from django.conf.urls.static import static
+from rest_framework import permissions
 from rest_framework.routers import DefaultRouter
 from user_api.views import (
     UserProfileViewSet,
@@ -19,6 +20,19 @@ from meetings_api.views.meetng_showing_oneobject import MeetingItemShowOneObject
 
 from tasks_api import urls
 
+
+from drf_yasg.views import get_schema_view
+from drf_yasg import openapi
+
+
+schema_view = get_schema_view(
+    openapi.Info(
+        title= "API Documentation",
+        default_version='v1',
+    ),
+    public=True,
+    permission_classes=[permissions.AllowAny],
+)
 
 router = DefaultRouter()
 
@@ -38,6 +52,8 @@ urlpatterns = [
     path('api/meeting/<int:meeting_id>/', MeetingItemShowOneObject.as_view()),
     path('api/profile-image/' , ProfileImageUpdateAPIView.as_view(), name='update-profile-image'),
     path('',include('tasks_api.urls')),
+    path('swagger/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
+    path('redoc/',   schema_view.with_ui('redoc',   cache_timeout=0), name='schema-redoc'),
 ]   
 
 if settings.DEBUG:

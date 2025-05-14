@@ -52,6 +52,7 @@ INSTALLED_APPS = [
     'user_api',
     'openai',
     'tasks_api',
+    'drf_yasg',
     ]
 
 MIDDLEWARE = [
