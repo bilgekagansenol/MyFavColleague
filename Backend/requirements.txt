@@ -3,7 +3,7 @@ anyio==4.9.0
 asgiref==3.8.1
 certifi==2025.4.26
 distro==1.9.0
-Django==5.2
+Django==5.2.1
 djangorestframework==3.16.0
 drf-yasg==1.21.10
 exceptiongroup==1.2.2
